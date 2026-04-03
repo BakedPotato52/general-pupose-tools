@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState } from 'react';
 import { Button } from './ui/button';
-import { useStore } from '@/lib/store';
+import { useEditStore } from '@/lib/contexts/editContext';
 import { cropCanvas } from '@/lib/imageProcessing';
 
 interface CropToolProps {
@@ -21,7 +21,7 @@ export function CropTool({ onClose, onApply }: CropToolProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
 
-  const { editedCanvas } = useStore();
+  const { editedCanvas } = useEditStore();
 
   useEffect(() => {
     if (!canvasRef.current || !editedCanvas) return;

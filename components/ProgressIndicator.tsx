@@ -1,6 +1,6 @@
 'use client';
 
-import { useStore } from '@/lib/store';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
 import { STEPS } from '@/lib/constants';
 import { Check, Camera, Palette, Wind, Layout, Download } from 'lucide-react';
 
@@ -13,7 +13,7 @@ const STEP_LABELS = {
 };
 
 export function ProgressIndicator() {
-  const { currentStep } = useStore();
+  const { currentStep } = useUIFlowStore();
   const steps = Object.values(STEPS);
   const currentStepIndex = steps.indexOf(currentStep);
 

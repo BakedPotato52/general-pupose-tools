@@ -55,8 +55,8 @@ function createMinimalPDF(imageDataUrl: string): ArrayBuffer {
   const pageWidth = 595.275;
   const pageHeight = 841.89;
 
-  // Create PDF structure
-  const pdfContent = `%PDF-1.4
+  // Build PDF content without the startxref offset first
+  const pdfWithoutTrailer = `%PDF-1.4
 1 0 obj
 << /Type /Catalog /Pages 2 0 R >>
 endobj
@@ -92,8 +92,13 @@ xref
 trailer
 << /Size 6 /Root 1 0 R >>
 startxref
-${(pdfContent.length + imageBytes.length + 400)}
-%%EOF`;
+`;
+
+  // Calculate the offset where xref starts
+  const xrefOffset = pdfWithoutTrailer.length;
+  
+  // Complete the PDF with correct offset and EOF marker
+  const pdfContent = pdfWithoutTrailer + xrefOffset + '\n%%EOF';
 
   const encoder = new TextEncoder();
   return encoder.encode(pdfContent);

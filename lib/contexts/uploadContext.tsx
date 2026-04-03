@@ -4,7 +4,6 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { AppError } from './errors';
 
 export interface UploadState {
   uploadedImageBlob: Blob | null;

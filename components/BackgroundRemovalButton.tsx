@@ -3,22 +3,25 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Spinner } from './ui/spinner';
-import { useStore } from '@/lib/store';
+import { useEditStore } from '@/lib/contexts/editContext';
+import { useBackgroundRemovalStore } from '@/lib/contexts/backgroundRemovalContext';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
 import { createCanvasFromImageData, applyMask, resizeToPassportDimensions } from '@/lib/imageProcessing';
 import { removeBackgroundAdvanced } from '@/lib/backgroundRemoval';
 import { STEPS } from '@/lib/constants';
+import { createError, ERROR_MESSAGES } from '@/lib/errors';
 import { Wind, AlertCircle } from 'lucide-react';
 
 export function BackgroundRemovalButton() {
+  const { editedCanvas } = useEditStore();
   const {
-    editedCanvas,
     bgRemovalInProgress,
     bgRemovalError,
     setBgRemovalInProgress,
     setBgRemovedCanvas,
     setBgRemovalError,
-    setCurrentStep,
-  } = useStore();
+  } = useBackgroundRemovalStore();
+  const { setCurrentStep, setError } = useUIFlowStore();
 
   const [retrying, setRetrying] = useState(false);
 
@@ -36,7 +39,7 @@ export function BackgroundRemovalButton() {
       const resultCanvas = editedCanvas.cloneNode() as HTMLCanvasElement;
       const ctx = resultCanvas.getContext('2d');
       if (!ctx) {
-        throw new Error('Failed to get canvas context');
+        throw createError('CANVAS_CONTEXT_FAILED', ERROR_MESSAGES.CANVAS_CONTEXT_FAILED);
       }
 
       // Draw original image on new canvas
@@ -61,13 +64,13 @@ export function BackgroundRemovalButton() {
       setBgRemovalInProgress(false);
       setCurrentStep(STEPS.LAYOUT);
     } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : 'Failed to remove background';
-      setBgRemovalError(message);
+      const appError = error instanceof Error && 'code' in error
+        ? error as any
+        : createError('BG_REMOVAL_FAILED', ERROR_MESSAGES.BG_REMOVAL_FAILED, error);
+      setBgRemovalError(appError);
+      setError(appError);
       setBgRemovalInProgress(false);
-      console.error('Background removal error:', error);
+      console.error('Background removal error:', appError);
     }
   };
 
@@ -90,7 +93,7 @@ export function BackgroundRemovalButton() {
             <p className="text-sm font-semibold text-red-900">
               Background removal failed
             </p>
-            <p className="text-sm text-red-700 mt-1">{bgRemovalError}</p>
+            <p className="text-sm text-red-700 mt-1">{bgRemovalError.message}</p>
           </div>
         </div>
       )}

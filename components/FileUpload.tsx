@@ -3,9 +3,12 @@
 import { useRef, useState } from 'react';
 import { Upload, Camera } from 'lucide-react';
 import { Button } from './ui/button';
-import { useStore } from '@/lib/store';
+import { useUploadStore } from '@/lib/contexts/uploadContext';
+import { useEditStore } from '@/lib/contexts/editContext';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
 import { loadImageFromBlob, compressImage } from '@/lib/imageProcessing';
 import { STEPS, IMAGE_PROCESSING } from '@/lib/constants';
+import { createError, ERROR_MESSAGES } from '@/lib/errors';
 
 export function FileUpload() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -13,7 +16,9 @@ export function FileUpload() {
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
-  const { setUploadedImage, setCurrentStep, setError } = useStore();
+  const { setUploadedImage } = useUploadStore();
+  const { initializeWithCanvas } = useEditStore();
+  const { setCurrentStep, setError } = useUIFlowStore();
 
   const handleFileSelected = async (file: File) => {
     try {
@@ -22,14 +27,17 @@ export function FileUpload() {
 
       // Validate file size
       if (file.size > IMAGE_PROCESSING.MAX_UPLOAD_SIZE_MB * 1024 * 1024) {
-        throw new Error(
-          `File size exceeds ${IMAGE_PROCESSING.MAX_UPLOAD_SIZE_MB}MB limit`
+        const error = createError(
+          'FILE_TOO_LARGE',
+          `${ERROR_MESSAGES.FILE_TOO_LARGE} (Max: ${IMAGE_PROCESSING.MAX_UPLOAD_SIZE_MB}MB)`
         );
+        throw error;
       }
 
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        throw new Error('Please upload a valid image file');
+        const error = createError('INVALID_FILE_TYPE', ERROR_MESSAGES.INVALID_FILE_TYPE);
+        throw error;
       }
 
       // Compress image
@@ -38,15 +46,20 @@ export function FileUpload() {
       // Load image to canvas
       const canvas = await loadImageFromBlob(compressedBlob);
 
-      // Store in state
+      // Store in upload state
       setUploadedImage(compressedBlob, canvas);
+      
+      // Initialize edit state with canvas and history
+      initializeWithCanvas(canvas);
+      
       setCurrentStep(STEPS.EDIT);
       setError(null);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to upload image';
-      setUploadError(message);
-      setError(message);
+      const appError = error instanceof Error && 'code' in error
+        ? error as any
+        : createError('IMAGE_LOAD_FAILED', 'Failed to upload image', error);
+      setUploadError(appError.message);
+      setError(appError);
     } finally {
       setUploading(false);
     }

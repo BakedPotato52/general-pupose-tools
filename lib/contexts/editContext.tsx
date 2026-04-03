@@ -25,6 +25,7 @@ export interface EditState {
   canUndo: boolean;
   canRedo: boolean;
   setEditedCanvas: (canvas: HTMLCanvasElement | null) => void;
+  initializeWithCanvas: (canvas: HTMLCanvasElement) => void;
   clearEditHistory: () => void;
 }
 
@@ -90,6 +91,14 @@ export const EditProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   }, []);
 
+  const initializeWithCanvas = useCallback((canvas: HTMLCanvasElement) => {
+    setState({
+      editedCanvas: canvas,
+      editHistory: [{ canvas, edits: {} }],
+      editHistoryIndex: 0,
+    });
+  }, []);
+
   const clearEditHistory = useCallback(() => {
     setState((prev) => ({
       ...prev,
@@ -110,6 +119,7 @@ export const EditProvider: React.FC<{ children: React.ReactNode }> = ({ children
     undoEdit,
     redoEdit,
     setEditedCanvas,
+    initializeWithCanvas,
     clearEditHistory,
   };
 

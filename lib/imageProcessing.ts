@@ -1,5 +1,6 @@
 import { PASSPORT_SPECS, IMAGE_PROCESSING } from './constants';
-import { getCanvasContext, createError } from './errors';
+import { createError } from './errors';
+import { getCanvasContext } from './canvasUtils';
 
 /**
  * Load an image from a Blob and return as a Canvas element
@@ -37,10 +38,7 @@ export function createCanvasFromImageData(imageData: ImageData): HTMLCanvasEleme
   const canvas = document.createElement('canvas');
   canvas.width = imageData.width;
   canvas.height = imageData.height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(canvas);
   ctx.putImageData(imageData, 0, 0);
   return canvas;
 }
@@ -49,10 +47,7 @@ export function createCanvasFromImageData(imageData: ImageData): HTMLCanvasEleme
  * Get ImageData from a canvas
  */
 export function getImageDataFromCanvas(canvas: HTMLCanvasElement): ImageData {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(canvas);
   return ctx.getImageData(0, 0, canvas.width, canvas.height);
 }
 
@@ -69,10 +64,7 @@ export function cropCanvas(
   const croppedCanvas = document.createElement('canvas');
   croppedCanvas.width = width;
   croppedCanvas.height = height;
-  const ctx = croppedCanvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(croppedCanvas);
   ctx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
   return croppedCanvas;
 }
@@ -92,10 +84,7 @@ export function rotateCanvas(canvas: HTMLCanvasElement, degrees: number): HTMLCa
   rotatedCanvas.width = newWidth;
   rotatedCanvas.height = newHeight;
 
-  const ctx = rotatedCanvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(rotatedCanvas);
 
   ctx.translate(newWidth / 2, newHeight / 2);
   ctx.rotate(radians);
@@ -112,11 +101,6 @@ export function adjustBrightnessContrast(
   brightness: number = 0,
   contrast: number = 0
 ): HTMLCanvasElement {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
-
   // brightness range: -100 to 100
   // contrast range: -100 to 100
   const brightnessMultiplier = 1 + brightness / 100;
@@ -126,10 +110,7 @@ export function adjustBrightnessContrast(
   adjustedCanvas.width = canvas.width;
   adjustedCanvas.height = canvas.height;
 
-  const adjustedCtx = adjustedCanvas.getContext('2d');
-  if (!adjustedCtx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const adjustedCtx = getCanvasContext(adjustedCanvas);
 
   // Apply filter using canvas filter property
   adjustedCtx.filter = `brightness(${brightnessMultiplier}) contrast(${contrastMultiplier})`;
@@ -173,10 +154,7 @@ export function resizeCanvasWithPadding(
   resizedCanvas.width = targetWidth;
   resizedCanvas.height = targetHeight;
 
-  const ctx = resizedCanvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(resizedCanvas);
 
   // Fill background
   ctx.fillStyle = backgroundColor;
@@ -207,10 +185,7 @@ export function applyMask(
   canvas: HTMLCanvasElement,
   maskImageData: ImageData
 ): HTMLCanvasElement {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(canvas);
 
   // Get current image data
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -243,7 +218,7 @@ export async function canvasToBlob(
         if (blob) {
           resolve(blob);
         } else {
-          reject(new Error('Failed to convert canvas to blob'));
+          reject(createError('IMAGE_PROCESSING_FAILED', 'Failed to convert canvas to blob'));
         }
       },
       type,
@@ -284,10 +259,7 @@ export function createBlankCanvas(
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(canvas);
   ctx.fillStyle = backgroundColor;
   ctx.fillRect(0, 0, width, height);
   return canvas;
@@ -304,10 +276,7 @@ export function drawImageOnCanvas(
   width: number,
   height: number
 ): void {
-  const ctx = targetCanvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Failed to get canvas context');
-  }
+  const ctx = getCanvasContext(targetCanvas);
   ctx.drawImage(sourceCanvas, x, y, width, height);
 }
 
@@ -327,18 +296,10 @@ export async function compressImage(blob: Blob): Promise<Blob> {
     const newWidth = Math.floor(canvas.width * ratio);
     const newHeight = Math.floor(canvas.height * ratio);
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      throw new Error('Failed to get canvas context');
-    }
-
     const newCanvas = document.createElement('canvas');
     newCanvas.width = newWidth;
     newCanvas.height = newHeight;
-    const newCtx = newCanvas.getContext('2d');
-    if (!newCtx) {
-      throw new Error('Failed to get canvas context');
-    }
+    const newCtx = getCanvasContext(newCanvas);
 
     newCtx.drawImage(canvas, 0, 0, newWidth, newHeight);
     return canvasToBlob(newCanvas, 'image/jpeg', IMAGE_PROCESSING.COMPRESSION_QUALITY);

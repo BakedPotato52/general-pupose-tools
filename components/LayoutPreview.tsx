@@ -2,22 +2,23 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from './ui/button';
-import { useStore } from '@/lib/store';
+import { useBackgroundRemovalStore } from '@/lib/contexts/backgroundRemovalContext';
+import { useLayoutStore } from '@/lib/contexts/layoutContext';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
 import { generateLayoutCanvas } from '@/lib/layoutGenerator';
 import { canvasToDataUrl } from '@/lib/imageProcessing';
 import { STEPS } from '@/lib/constants';
+import { createError } from '@/lib/errors';
 import { Loader2 } from 'lucide-react';
 
 export function LayoutPreview() {
+  const { backgroundRemovedCanvas } = useBackgroundRemovalStore();
   const {
-    backgroundRemovedCanvas,
     selectedLayout,
     duplicateCount,
     setLayoutCanvas,
-    setCurrentStep,
-    setLoading,
-    loading,
-  } = useStore();
+  } = useLayoutStore();
+  const { setCurrentStep, setLoading, loading, setError } = useUIFlowStore();
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
@@ -43,10 +44,12 @@ export function LayoutPreview() {
 
       setLoading(false);
     } catch (error) {
-      console.error('Layout generation failed:', error);
+      const appError = createError('IMAGE_PROCESSING_FAILED', 'Layout generation failed', error);
+      setError(appError);
       setLoading(false);
+      console.error('Layout generation failed:', appError);
     }
-  }, [backgroundRemovedCanvas, selectedLayout, duplicateCount, setLayoutCanvas, setLoading]);
+  }, [backgroundRemovedCanvas, selectedLayout, duplicateCount, setLayoutCanvas, setLoading, setError]);
 
   if (!backgroundRemovedCanvas) {
     return null;

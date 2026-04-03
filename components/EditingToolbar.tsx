@@ -5,13 +5,15 @@ import { Button } from './ui/button';
 import { CropTool } from './CropTool';
 import { RotateControl } from './RotateControl';
 import { BrightnessContrastSliders } from './BrightnessContrastSliders';
-import { useStore } from '@/lib/store';
+import { useEditStore } from '@/lib/contexts/editContext';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
 import {
   cropCanvas,
   rotateCanvas,
   adjustBrightnessContrast,
 } from '@/lib/imageProcessing';
 import { Undo2, Redo2, X } from 'lucide-react';
+import { createError } from '@/lib/errors';
 
 export function EditingToolbar() {
   const [showCropTool, setShowCropTool] = useState(false);
@@ -23,12 +25,11 @@ export function EditingToolbar() {
     applyEdit,
     undoEdit,
     redoEdit,
-    editHistoryIndex,
-    editHistory,
-  } = useStore();
+    canUndo,
+    canRedo,
+  } = useEditStore();
 
-  const canUndo = editHistoryIndex > 0;
-  const canRedo = editHistoryIndex < editHistory.length - 1;
+  const { setError } = useUIFlowStore();
 
   const handleCropApply = (croppedCanvas: HTMLCanvasElement) => {
     if (editedCanvas) {
@@ -45,7 +46,8 @@ export function EditingToolbar() {
       const rotated = rotateCanvas(editedCanvas, degrees);
       applyEdit(rotated, { rotate: degrees });
     } catch (error) {
-      console.error('Rotation failed:', error);
+      const appError = createError('IMAGE_PROCESSING_FAILED', 'Rotation failed', error);
+      setError(appError);
     }
   };
 
@@ -72,7 +74,8 @@ export function EditingToolbar() {
         contrast: contrastValue,
       });
     } catch (error) {
-      console.error('Adjustment failed:', error);
+      const appError = createError('IMAGE_PROCESSING_FAILED', 'Brightness/contrast adjustment failed', error);
+      setError(appError);
     }
   };
 

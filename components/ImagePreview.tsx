@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { useStore } from '@/lib/store';
+import { useUploadStore } from '@/lib/contexts/uploadContext';
+import { useEditStore } from '@/lib/contexts/editContext';
+import { useBackgroundRemovalStore } from '@/lib/contexts/backgroundRemovalContext';
 
 interface ImagePreviewProps {
   canvas?: HTMLCanvasElement | null;
@@ -15,10 +17,12 @@ export function ImagePreview({
   className = '',
 }: ImagePreviewProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { editedCanvas, backgroundRemovedCanvas, passportCanvas } = useStore();
+  const { uploadedImageCanvas } = useUploadStore();
+  const { editedCanvas } = useEditStore();
+  const { backgroundRemovedCanvas, passportCanvas } = useBackgroundRemovalStore();
 
-  // Use provided canvas or fall back to store state
-  const displayCanvas = externalCanvas || editedCanvas || backgroundRemovedCanvas || passportCanvas;
+  // Use provided canvas or fall back to store state (in order of priority)
+  const displayCanvas = externalCanvas || editedCanvas || uploadedImageCanvas || backgroundRemovedCanvas || passportCanvas;
 
   useEffect(() => {
     if (!canvasRef.current || !displayCanvas) return;

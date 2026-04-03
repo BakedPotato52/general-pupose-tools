@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
-import { StoreProvider } from '@/lib/store'
+import { StoreProvider } from '@/lib/contexts'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { GlobalErrorDisplay } from '@/components/GlobalErrorDisplay'
 import './globals.css'
 
 const _geist = Geist({ subsets: ["latin"] });
@@ -43,9 +45,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <StoreProvider>
-          {children}
-        </StoreProvider>
+        <ErrorBoundary>
+          <StoreProvider>
+            {children}
+            <GlobalErrorDisplay />
+          </StoreProvider>
+        </ErrorBoundary>
         <Analytics />
       </body>
     </html>

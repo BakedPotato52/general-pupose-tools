@@ -3,12 +3,15 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
 import { Spinner } from './ui/spinner';
-import { useStore } from '@/lib/store';
+import { useLayoutStore } from '@/lib/contexts/layoutContext';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
 import { generateSimplePDF, downloadPDF, generateFilename } from '@/lib/pdfGenerator';
+import { createError } from '@/lib/errors';
 import { Download, AlertCircle, CheckCircle } from 'lucide-react';
 
 export function ExportButton() {
-  const { layoutCanvas } = useStore();
+  const { layoutCanvas } = useLayoutStore();
+  const { setError } = useUIFlowStore();
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
   const [exportSuccess, setExportSuccess] = useState(false);
@@ -34,11 +37,11 @@ export function ExportButton() {
       // Reset success message after 3 seconds
       setTimeout(() => setExportSuccess(false), 3000);
     } catch (error) {
-      const message =
-        error instanceof Error ? error.message : 'Failed to export PDF';
-      setExportError(message);
+      const appError = createError('PDF_GENERATION_FAILED', 'Failed to export PDF', error);
+      setExportError(appError.message);
+      setError(appError);
       setExporting(false);
-      console.error('Export error:', error);
+      console.error('Export error:', appError);
     }
   };
 

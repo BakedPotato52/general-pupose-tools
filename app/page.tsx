@@ -9,7 +9,8 @@ import { LayoutPreview } from '@/components/LayoutPreview';
 import { ExportButton } from '@/components/ExportButton';
 import { ProgressIndicator } from '@/components/ProgressIndicator';
 import { Button } from '@/components/ui/button';
-import { useStore } from '@/lib/store';
+import { useUIFlowStore } from '@/lib/contexts/uiFlowContext';
+import { useUploadStore } from '@/lib/contexts/uploadContext';
 import { STEPS } from '@/lib/constants';
 import { ChevronLeft, RotateCcw } from 'lucide-react';
 
@@ -17,10 +18,16 @@ export default function Home() {
   const {
     currentStep,
     goToPreviousStep,
-    resetState,
+    resetFlow,
     error,
-    setError,
-  } = useStore();
+  } = useUIFlowStore();
+
+  const { clearUploadedImage } = useUploadStore();
+
+  const handleStartOver = () => {
+    resetFlow();
+    clearUploadedImage();
+  };
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -135,21 +142,6 @@ export default function Home() {
       {/* Progress Indicator */}
       <ProgressIndicator />
 
-      {/* Error Banner */}
-      {error && (
-        <div className="bg-red-50 border-b border-red-200 px-4 py-3">
-          <div className="max-w-4xl mx-auto flex justify-between items-center">
-            <p className="text-red-800 text-sm">{error}</p>
-            <button
-              onClick={() => setError(null)}
-              className="text-red-600 hover:text-red-700 font-medium text-sm"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* Main Content */}
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
@@ -164,7 +156,7 @@ export default function Home() {
           </div>
           {currentStep !== STEPS.UPLOAD && (
             <Button
-              onClick={resetState}
+              onClick={handleStartOver}
               variant="outline"
               className="border-gray-300 text-gray-700 hover:bg-gray-100"
             >

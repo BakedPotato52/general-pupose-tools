@@ -1,6 +1,6 @@
 'use client';
 
-import { useStore } from '@/lib/store';
+import { useLayoutStore } from '@/lib/contexts/layoutContext';
 import { getAvailableLayouts, validateDuplicateCount } from '@/lib/layoutGenerator';
 import { LayoutType } from '@/lib/constants';
 import { Input } from './ui/input';
@@ -12,7 +12,7 @@ export function LayoutSelector() {
     duplicateCount,
     setSelectedLayout,
     setDuplicateCount,
-  } = useStore();
+  } = useLayoutStore();
 
   const layouts = getAvailableLayouts();
   const validation = validateDuplicateCount(selectedLayout, duplicateCount);
