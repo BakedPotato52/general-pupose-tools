@@ -110,7 +110,7 @@ export default function Home() {
       case STEPS.EXPORT:
         return (
           <div className="max-w-2xl mx-auto space-y-8">
-            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-8 border border-green-200">
+            <div className="bg-linear-to-br from-green-50 to-emerald-50 rounded-xl p-8 border border-green-200">
               <h2 className="text-3xl font-bold text-green-900 mb-4">
                 Ready to Export
               </h2>

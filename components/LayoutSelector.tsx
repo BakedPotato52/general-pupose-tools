@@ -51,7 +51,7 @@ export function LayoutSelector() {
             >
               <div className="flex items-center gap-3">
                 {/* Grid Visualization */}
-                <div className="flex-shrink-0 w-12 h-12 border border-gray-300 rounded flex items-center justify-center bg-gray-100">
+                <div className="shrink-0 w-12 h-12 border border-gray-300 rounded flex items-center justify-center bg-gray-100">
                   <div
                     className="grid gap-0.5"
                     style={{

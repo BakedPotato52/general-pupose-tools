@@ -50,7 +50,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-50 p-4">
+          <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-red-50 to-pink-50 p-4">
           <div className="max-w-md w-full">
             <div className="bg-white rounded-lg shadow-lg p-8">
               <div className="flex justify-center mb-4">
@@ -69,11 +69,11 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
               {process.env.NODE_ENV === 'development' && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                  <p className="text-xs font-mono text-red-700 whitespace-pre-wrap break-words">
+                              <p className="text-xs font-mono text-red-700 whitespace-pre-wrap wrap-break-words">
                     {this.state.error?.message}
                   </p>
                   {this.state.errorInfo && (
-                    <p className="text-xs font-mono text-red-600 mt-2 whitespace-pre-wrap break-words">
+                                  <p className="text-xs font-mono text-red-600 mt-2 whitespace-pre-wrap wrap-break-words">
                       {this.state.errorInfo.componentStack}
                     </p>
                   )}

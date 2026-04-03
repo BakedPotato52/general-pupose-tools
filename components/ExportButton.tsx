@@ -53,7 +53,7 @@ export function ExportButton() {
     <div className="space-y-4">
       {exportError && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-red-900">
               Export failed
@@ -65,7 +65,7 @@ export function ExportButton() {
 
       {exportSuccess && (
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg flex gap-3 animate-in fade-in">
-          <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+          <CheckCircle className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-green-900">
               PDF downloaded successfully!
@@ -80,7 +80,7 @@ export function ExportButton() {
       <Button
         onClick={handleExport}
         disabled={exporting}
-        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold h-12"
+        className="w-full bg-linear-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-semibold h-12"
       >
         {exporting ? (
           <>

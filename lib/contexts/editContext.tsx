@@ -33,7 +33,7 @@ const EditContext = createContext<EditState | undefined>(undefined);
 
 const INITIAL_EDIT_STATE: Omit<
   EditState,
-  'applyEdit' | 'undoEdit' | 'redoEdit' | 'canUndo' | 'canRedo' | 'setEditedCanvas' | 'clearEditHistory'
+    'applyEdit' | 'undoEdit' | 'redoEdit' | 'canUndo' | 'canRedo' | 'setEditedCanvas' | 'initializeWithCanvas' | 'clearEditHistory'
 > = {
   editedCanvas: null,
   editHistory: [],
@@ -92,11 +92,12 @@ export const EditProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const initializeWithCanvas = useCallback((canvas: HTMLCanvasElement) => {
-    setState({
+      setState((prev) => ({
+          ...prev,
       editedCanvas: canvas,
       editHistory: [{ canvas, edits: {} }],
       editHistoryIndex: 0,
-    });
+      }));
   }, []);
 
   const clearEditHistory = useCallback(() => {

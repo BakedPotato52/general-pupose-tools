@@ -82,7 +82,7 @@ export function FileUpload() {
 
   return (
     <div className="w-full max-w-2xl mx-auto">
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-dashed border-blue-200 p-12 text-center">
+      <div className="bg-linear-to-br from-blue-50 to-indigo-50 rounded-2xl border-2 border-dashed border-blue-200 p-12 text-center">
         <div className="mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
             <Upload className="w-8 h-8 text-blue-600" />

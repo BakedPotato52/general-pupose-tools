@@ -88,7 +88,7 @@ export function BackgroundRemovalButton() {
     <div className="space-y-4">
       {bgRemovalError && (
         <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex gap-3">
-          <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-semibold text-red-900">
               Background removal failed
@@ -101,7 +101,7 @@ export function BackgroundRemovalButton() {
       <Button
         onClick={bgRemovalError && !retrying ? handleRetry : handleRemoveBackground}
         disabled={bgRemovalInProgress || retrying}
-        className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold h-12"
+        className="w-full bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold h-12"
       >
         {bgRemovalInProgress || retrying ? (
           <>

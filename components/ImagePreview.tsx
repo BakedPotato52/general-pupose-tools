@@ -60,7 +60,6 @@ export function ImagePreview({
           ref={canvasRef}
           className="max-w-full max-h-full object-contain"
           style={{ maxHeight: '400px' }}
-          alt={title}
         />
       </div>
       {displayCanvas && (
